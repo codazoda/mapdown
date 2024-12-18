@@ -64,25 +64,31 @@ func main() {
 		Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
 	}
 
-	// Add the home page
+	// Add the home page without trailing slash
 	urlSet.URLs = append(urlSet.URLs, URL{
-		Loc:        baseURL + "/",
+		Loc:        baseURL,
 		LastMod:    time.Now().Format("2006-01-02"),
 		ChangeFreq: "monthly",
 		Priority:   "1.0",
 	})
 
-	// Add entries for all directories and .md files in the current directory
+	// Add entries for .md files in the current directory and subdirectories
 	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
-		// Skip the root directory as it's already added
-		if path == "." {
+		// Skip directories; we're only interested in files
+		if info.IsDir() {
 			return nil
 		}
 
+		// Process only .md files excluding README.md
+		if filepath.Ext(info.Name()) != ".md" || strings.ToLower(info.Name()) == "readme.md" {
+			return nil
+		}
+
+		// Get the relative path
 		relPath, err := filepath.Rel(".", path)
 		if err != nil {
 			return err
@@ -91,26 +97,28 @@ func main() {
 		// Convert OS-specific path separators to URL separators
 		urlPath := strings.ReplaceAll(relPath, string(os.PathSeparator), "/")
 
-		if info.IsDir() {
-			// Add trailing slash for directories
-			url := URL{
-				Loc:        fmt.Sprintf("%s/%s/", baseURL, urlPath),
-				LastMod:    info.ModTime().Format("2006-01-02"),
-				ChangeFreq: "monthly",
-				Priority:   "0.8",
+		var loc string
+		if strings.ToLower(filepath.Base(urlPath)) == "index.md" {
+			// If the file is index.md, remove 'index.md' from the path
+			dirPath := filepath.Dir(urlPath)
+			if dirPath == "." {
+				// If index.md is in the root directory, skip to avoid duplication
+				return nil
 			}
-			urlSet.URLs = append(urlSet.URLs, url)
-		} else if filepath.Ext(info.Name()) == ".md" && info.Name() != "README.md" {
-			// Remove the .md extension
+			loc = fmt.Sprintf("%s/%s/", baseURL, strings.TrimRight(dirPath, "/"))
+		} else {
+			// Remove the .md extension for other Markdown files
 			trimmedPath := strings.TrimSuffix(urlPath, ".md")
-			url := URL{
-				Loc:        fmt.Sprintf("%s/%s", baseURL, trimmedPath),
-				LastMod:    info.ModTime().Format("2006-01-02"),
-				ChangeFreq: "monthly",
-				Priority:   "0.8",
-			}
-			urlSet.URLs = append(urlSet.URLs, url)
+			loc = fmt.Sprintf("%s/%s", baseURL, trimmedPath)
 		}
+
+		// Add the URL entry
+		urlSet.URLs = append(urlSet.URLs, URL{
+			Loc:        loc,
+			LastMod:    info.ModTime().Format("2006-01-02"),
+			ChangeFreq: "monthly",
+			Priority:   "0.8",
+		})
 
 		return nil
 	})
