@@ -27,25 +27,25 @@ Download the appropriate executable for your architecture and save it somewhere 
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://www.example.com</loc>
-        <lastmod>2024-12-16</lastmod>
+        <lastmod>2024-12-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://www.example.com/another-great-example</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://www.example.com/first-example</loc>
+        <lastmod>2024-12-17</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://www.example.com/example-article-about-topic</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://www.example.com/second-example</loc>
+        <lastmod>2024-12-17</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     <url>
-        <loc>https://www.example.com/index</loc>
-        <lastmod>2024-12-16</lastmod>
+        <loc>https://www.example.com/special/another-example</loc>
+        <lastmod>2024-12-17</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
