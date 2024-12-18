@@ -2,9 +2,21 @@
 
 Create a `sitemap.xml` file based on a list of markdown files in the current directory.
 
+
+## Installing
+
+Download the appropriate executable for your architecture and save it somewhere in your path.
+
+[Download for MacOS 64-Bit]()  
+Download for Linux 64-Bit
+Download Windows 64-Bit  
+Download Others  
+
+
 ## Usage
 
-    mapdown -url https://example.com
+    mapdown https://example.com
+
 
 ## Example Output
 
@@ -35,5 +47,14 @@ Create a `sitemap.xml` file based on a list of markdown files in the current dir
         <priority>0.8</priority>
     </url>
     </urlset>
+
+
+## Building
+
+    cd src
+    make
+
+
+## About
 
 Mapdown was created by Joel Dare on December 16, 2024.
