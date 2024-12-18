@@ -7,10 +7,13 @@ Create a `sitemap.xml` file based on a list of markdown files in the current dir
 
 Download the appropriate executable for your architecture and save it somewhere in your path.
 
-[Download for MacOS 64-Bit Apple Silicon](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/mapdown-darwin-arm64)  
-[Download for Linux x86 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/mapdown-linux-amd64)
-[Download Windows 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/mapdown-linux-amd64)  
-[Download Others]()  
+[Download for MacOS 64-Bit Apple Silicon](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/darwin-arm64/mapdown)
+
+[Download for Linux x86 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/linux-amd64/mapdown)
+
+[Download Windows 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/linux-amd64/mapdown.exe)
+
+[Other Downloads](https://github.com/codazoda/mapdown/tree/main/bin)
 
 
 ## Usage
