@@ -58,6 +58,9 @@ Download the appropriate executable for your architecture and save it somewhere 
     make
 
 
-## About
+## Notes
 
-Mapdown was created by Joel Dare on December 16, 2024.
+- The main URL is always included (https://www.example.com) even if there is not an index.md file
+- Where index.md files exist the path without index is used (https://www.example.com/example-directory)
+
+_Mapdown was created by Joel Dare on December 16, 2024._
