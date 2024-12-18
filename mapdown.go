@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,19 +25,39 @@ type URLSet struct {
 }
 
 func main() {
-	// Parse command line arguments
-	baseURL := flag.String("url", "", "Base URL for the sitemap (required)")
+	// Define flags
 	outputFile := flag.String("file", "sitemap.xml", "Output file for the sitemap (optional)")
+
+	// Customize the usage message
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [OPTIONS] <baseURL>\n", os.Args[0])
+		fmt.Fprintf(flag.CommandLine.Output(), "\n<baseURL> must be a fully qualified URL (e.g., https://www.example.com)\n\nOptions:\n")
+		flag.PrintDefaults()
+	}
+
+	// Parse flags
 	flag.Parse()
 
-	if *baseURL == "" {
-		fmt.Println("Error: url is required.")
+	// Retrieve positional arguments
+	args := flag.Args()
+
+	if len(args) < 1 {
+		fmt.Println("Error: baseURL is required.")
 		flag.Usage()
 		os.Exit(1)
 	}
 
+	baseURL := args[0]
+
+	// Validate baseURL
+	parsedURL, err := url.ParseRequestURI(baseURL)
+	if err != nil || (parsedURL.Scheme != "http" && parsedURL.Scheme != "https") {
+		fmt.Printf("Error: Invalid baseURL provided. Please provide a fully qualified URL (e.g., https://www.example.com)\n")
+		os.Exit(1)
+	}
+
 	// Ensure baseURL does not have a trailing slash
-	*baseURL = strings.TrimRight(*baseURL, "/")
+	baseURL = strings.TrimRight(parsedURL.String(), "/")
 
 	// Create the sitemap
 	urlSet := URLSet{
@@ -45,14 +66,14 @@ func main() {
 
 	// Add the home page
 	urlSet.URLs = append(urlSet.URLs, URL{
-		Loc:        *baseURL + "/",
+		Loc:        baseURL + "/",
 		LastMod:    time.Now().Format("2006-01-02"),
 		ChangeFreq: "monthly",
 		Priority:   "1.0",
 	})
 
 	// Add entries for all directories and .md files in the current directory
-	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -73,7 +94,7 @@ func main() {
 		if info.IsDir() {
 			// Add trailing slash for directories
 			url := URL{
-				Loc:        fmt.Sprintf("%s/%s/", *baseURL, urlPath),
+				Loc:        fmt.Sprintf("%s/%s/", baseURL, urlPath),
 				LastMod:    info.ModTime().Format("2006-01-02"),
 				ChangeFreq: "monthly",
 				Priority:   "0.8",
@@ -83,7 +104,7 @@ func main() {
 			// Remove the .md extension
 			trimmedPath := strings.TrimSuffix(urlPath, ".md")
 			url := URL{
-				Loc:        fmt.Sprintf("%s/%s", *baseURL, trimmedPath),
+				Loc:        fmt.Sprintf("%s/%s", baseURL, trimmedPath),
 				LastMod:    info.ModTime().Format("2006-01-02"),
 				ChangeFreq: "monthly",
 				Priority:   "0.8",
@@ -110,7 +131,7 @@ func main() {
 	encoder := xml.NewEncoder(file)
 	encoder.Indent("", "  ")
 
-	// Add the XML declaration to the encoder
+	// Write the XML header
 	file.WriteString(xml.Header)
 
 	// Write the XML content using the encoder
