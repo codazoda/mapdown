@@ -11,7 +11,7 @@ Download the appropriate executable for your architecture and save it somewhere 
 
 [Download for Linux x86 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/linux-amd64/mapdown)
 
-[Download Windows x86 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/linux-amd64/mapdown.exe)
+[Download Windows x86 64-Bit](https://github.com/codazoda/mapdown/raw/refs/heads/main/bin/windows-amd64/mapdown.exe)
 
 [Other Downloads](https://github.com/codazoda/mapdown/tree/main/bin)
 
