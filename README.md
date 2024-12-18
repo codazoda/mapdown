@@ -36,12 +36,4 @@ Create a `sitemap.xml` file based on a list of markdown files in the current dir
     </url>
     </urlset>
 
-## More Information
-
-I write on several websites using plain-text files in the popular Markdown format. Then I use Mapdown to create a sitemap of all the markdown files.
-
 Mapdown was created by Joel Dare on December 16, 2024.
-
-## Limitations
-
-Mapdown does not current traverse directories.

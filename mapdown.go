@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -34,6 +35,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Ensure baseURL does not have a trailing slash
+	*baseURL = strings.TrimRight(*baseURL, "/")
+
 	// Create the sitemap
 	urlSet := URLSet{
 		Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
@@ -41,27 +45,52 @@ func main() {
 
 	// Add the home page
 	urlSet.URLs = append(urlSet.URLs, URL{
-		Loc:        *baseURL,
+		Loc:        *baseURL + "/",
 		LastMod:    time.Now().Format("2006-01-02"),
 		ChangeFreq: "monthly",
 		Priority:   "1.0",
 	})
 
-	// Add entries for all .md files in the current directory
+	// Add entries for all directories and .md files in the current directory
 	err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if filepath.Ext(info.Name()) == ".md" && info.Name() != "README.md" {
-			filename := info.Name()[:len(info.Name())-3] // Remove .md extension
-			lastMod := info.ModTime().Format("2006-01-02")
-			urlSet.URLs = append(urlSet.URLs, URL{
-				Loc:        fmt.Sprintf("%s/%s", *baseURL, filename),
-				LastMod:    lastMod,
+
+		// Skip the root directory as it's already added
+		if path == "." {
+			return nil
+		}
+
+		relPath, err := filepath.Rel(".", path)
+		if err != nil {
+			return err
+		}
+
+		// Convert OS-specific path separators to URL separators
+		urlPath := strings.ReplaceAll(relPath, string(os.PathSeparator), "/")
+
+		if info.IsDir() {
+			// Add trailing slash for directories
+			url := URL{
+				Loc:        fmt.Sprintf("%s/%s/", *baseURL, urlPath),
+				LastMod:    info.ModTime().Format("2006-01-02"),
 				ChangeFreq: "monthly",
 				Priority:   "0.8",
-			})
+			}
+			urlSet.URLs = append(urlSet.URLs, url)
+		} else if filepath.Ext(info.Name()) == ".md" && info.Name() != "README.md" {
+			// Remove the .md extension
+			trimmedPath := strings.TrimSuffix(urlPath, ".md")
+			url := URL{
+				Loc:        fmt.Sprintf("%s/%s", *baseURL, trimmedPath),
+				LastMod:    info.ModTime().Format("2006-01-02"),
+				ChangeFreq: "monthly",
+				Priority:   "0.8",
+			}
+			urlSet.URLs = append(urlSet.URLs, url)
 		}
+
 		return nil
 	})
 	if err != nil {
@@ -82,12 +111,7 @@ func main() {
 	encoder.Indent("", "  ")
 
 	// Add the XML declaration to the encoder
-	encoder.EncodeToken(xml.ProcInst{
-		Target: "xml",
-		Inst:   []byte(`version="1.0" encoding="UTF-8"`),
-	})
-	encoder.EncodeToken(xml.CharData("\n"))
-	encoder.Flush()
+	file.WriteString(xml.Header)
 
 	// Write the XML content using the encoder
 	if err := encoder.Encode(urlSet); err != nil {
