@@ -1,6 +1,6 @@
 # Mapdown
 
-Create a `sitemap.xml` file based on a list of markdown files in the current directory.
+Create a `sitemap.xml` file based on the Markdown files in the current directory.
 
 
 ## Installing
